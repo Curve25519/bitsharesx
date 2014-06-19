@@ -973,7 +973,8 @@
             {
                 "name" :  "account_name",
                 "type" : "account_name",
-                "description" : "the account to report votes on"
+                "description" : "the account to report votes on, or empty for all accounts"
+                "default_value" : ""
             }
           ],
           "aliases" : ["votes"],
@@ -1018,7 +1019,7 @@
          "prerequisites" : ["wallet_open"]
       },
       {
-         "method_name" : "wallet_toggle_delegate_block_production",
+         "method_name" : "wallet_enable_delegate_block_production",
          "description" : "Enable or disable block production for a particular delegate account",
          "return_type" : "void",
          "parameters"  : [

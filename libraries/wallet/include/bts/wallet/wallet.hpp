@@ -151,7 +151,8 @@ namespace bts { namespace wallet {
           */
          ///@{
 
-         void toggle_delegate_block_production( const string& delegate_id, bool enable );
+         void enable_delegate_block_production( const string& delegate_id, 
+                                                bool enable = true );
          /**
           *  If this wallet has any delegate keys, this method will return the time
           *  at which this wallet may produce a block.
@@ -334,6 +335,8 @@ namespace bts { namespace wallet {
          bool      is_sending_address( const address& addr )const;
          bool      is_receive_address( const address& addr )const;
 
+
+         owallet_transaction_record lookup_transaction( const transaction_id_type& trx_id )const;
 
          /**
           *  Bitcoin compatiblity
