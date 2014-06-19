@@ -3,56 +3,8 @@
     "methods":
     [
         {
-            "method_name": "domain_pre_bid",
-            "description": "Submit a hash of a bid to stop someone from reverse-sniping it",
-            "return_type": "transaction_id_type",
-            "parameters": 
-            [
-                {
-                    "name": "domain_name",
-                    "type": "string",
-                    "description": ""
-                },
-                {
-                    "name": "bid_amount",
-                    "type": "share_type",
-                    "description": ""
-                },
-                {
-                    "name": "owner_account",
-                    "type": "account_name",
-                    "description": ""
-                }
-            ],
-            "prerequisites": ["wallet_open"]
-        },
-        {
-            "method_name": "domain_first_bid",
-            "description": "A first bid, which must be linked to a pre_bid",
-            "return_type": "transaction_id_type",
-            "parameters": 
-            [
-                {
-                    "name": "domain_name",
-                    "type": "string",
-                    "description": ""
-                },
-                {
-                    "name": "bid_amount",
-                    "type": "share_type",
-                    "description": ""
-                },
-                {
-                    "name": "owner_account",
-                    "type": "account_name",
-                    "description": ""
-                }
-            ],
-            "prerequisites": ["wallet_open"]
-        },
-        {
             "method_name": "domain_bid",
-            "description": "Place a bid on a domain that is already in an auction.",
+            "description": "Place a bid on a domain.",
             "return_type": "transaction_id_type",
             "parameters": 
             [
@@ -72,31 +24,7 @@
                     "description": ""
                 }
             ],
-            "prerequisites": ["wallet_open"]
-        },
-        {
-            "method_name": "domain_bid",
-            "description": "Place a bid on a domain that is already in an auction.",
-            "return_type": "transaction_id_type",
-            "parameters": 
-            [
-                {
-                    "name": "domain_name",
-                    "type": "string",
-                    "description": ""
-                },
-                {
-                    "name": "bid_amount",
-                    "type": "share_type",
-                    "description": ""
-                },
-                {
-                    "name": "owner_account",
-                    "type": "account_name",
-                    "description": ""
-                }
-            ],
-            "prerequisites": ["wallet_open"]
+            "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
             "method_name": "sell_domain",
@@ -115,11 +43,11 @@
                     "description": ""
                 }
             ],
-            "prerequisites": ["wallet_open"]
+            "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
             "method_name": "update_domain",
-            "description": "Update a domain's value and/or owner.",
+            "description": "Update a domain's value.",
             "return_type": "transaction_id_type",
             "parameters": 
             [
@@ -139,7 +67,27 @@
                     "description": ""
                 }
             ],
-            "prerequisites": ["wallet_open"]
+            "prerequisites": ["wallet_open", "wallet_unlocked"]
+        },
+        {
+            "method_name": "transfer_domain",
+            "description": "Update a domain's owner.",
+            "return_type": "transaction_id_type",
+            "parameters": 
+            [
+                {
+                    "name": "domain_name",
+                    "type": "string",
+                    "description": ""
+                },
+                {
+                    "name": "owner",
+                    "type": "account_name",
+                    "description": ""
+                }
+            ],
+            "prerequisites": ["wallet_open", "wallet_unlocked"]
         }
+
     ]
 }
