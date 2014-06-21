@@ -2482,6 +2482,41 @@ config load_config( const fc::path& datadir )
        return upnp_info;
    }
 
+
+    /* DNS methods */
+
+    signed_transaction        client_impl::domain_bid( const string& domain_name,
+                                                       const share_type& bid_amount,
+                                                       const string& owner_name )
+    {
+
+    }
+
+    signed_transaction        client_impl::domain_sell( const string& domain_name,
+                                                        const share_type& min_amount )
+    {
+    }
+
+    signed_transaction        client_impl::domain_transfer( const string& domain_name,
+                                                            const string& account_name )
+    {
+    }
+
+    signed_transaction        client_impl::domain_update( const string& domain_name,
+                                                          const variant& value,
+                                                          const string& new_owner_name )
+    {
+    }
+
+    variant                   client_impl::domain_show( const string& domain_name )
+    {
+    }    
+
+
+    /* End DNS methods */
+
+
+
    } // namespace detail
 ///////////////////////////////////////////////////////////////////////////////////////////////
 

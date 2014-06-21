@@ -2,19 +2,21 @@
 
 namespace bts { namespace blockchain {
 
-    struct auction_data
+    struct auction_record
     {
-        string        domain_name;
-        address       current_bidder;
-        asset         current_bid;
-        asset         required_bid;
+        string                 domain_name;
+        address                current_bidder;
+        asset                  current_bid;
+        asset                  required_bid;
+        fc::time_point_sec     last_bid_time; 
     };
 
-    struct domain_data
+    struct domain_record
     {
-        address        owner;
-        string         domain_name;
-        variant        value;
+        string                 domain_name;
+        address                owner;
+        variant                value;
+        fc::time_point_sec     last_update;
     };
 
 }}; // bts::blockchain

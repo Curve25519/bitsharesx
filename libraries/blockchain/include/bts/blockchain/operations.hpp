@@ -46,7 +46,10 @@ namespace bts { namespace blockchain {
       short_op_type               = 14,
       cover_op_type               = 15,
       add_collateral_op_type      = 16,
-      remove_collateral_op_type   = 17
+      remove_collateral_op_type   = 17,
+
+      update_domain_op_type       = 18,
+      update_auction_op_type      = 19
    };
 
    /**
@@ -118,6 +121,8 @@ FC_REFLECT_ENUM( bts::blockchain::operation_type_enum,
                  (cover_op_type)
                  (add_collateral_op_type)
                  (remove_collateral_op_type)
+                 (update_domain_op_type)
+                 (update_auction_op_type)
                )
 
 FC_REFLECT( bts::blockchain::operation, (type)(data) )

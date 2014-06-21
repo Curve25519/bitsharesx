@@ -177,6 +177,15 @@ namespace bts { namespace blockchain {
             /** used to prevent duplicate processing */
             // bts::db::level_pod_map< transaction_id_type, transaction_location > _processed_transaction_id_db;
 
+
+            // DNS
+
+            bts::db::level_map< string, auction_record >                        _auction_db;
+            bts::db::level_map< string, domain_record >                         _domain_db;
+
+            // END DNS
+
+
             void open_database( const fc::path& data_dir );
       };
 

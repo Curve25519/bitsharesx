@@ -5,7 +5,7 @@
         {
             "method_name": "domain_bid",
             "description": "Place a bid on a domain.",
-            "return_type": "transaction_id_type",
+            "return_type": "signed_transaction",
             "parameters": 
             [
                 {
@@ -27,9 +27,9 @@
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
-            "method_name": "sell_domain",
+            "method_name": "domain_sell",
             "description": "Start an auction for a domain you own at a particular price.",
-            "return_type": "transaction_id_type",
+            "return_type": "signed_transaction",
             "parameters": 
             [
                 {
@@ -46,9 +46,9 @@
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
-            "method_name": "update_domain",
+            "method_name": "domain_update",
             "description": "Update a domain's value.",
-            "return_type": "transaction_id_type",
+            "return_type": "signed_transaction",
             "parameters": 
             [
                 {
@@ -70,9 +70,9 @@
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
-            "method_name": "transfer_domain",
+            "method_name": "domain_transfer",
             "description": "Update a domain's owner.",
-            "return_type": "transaction_id_type",
+            "return_type": "signed_transaction",
             "parameters": 
             [
                 {
@@ -87,7 +87,20 @@
                 }
             ],
             "prerequisites": ["wallet_open", "wallet_unlocked"]
+        },
+        {
+            "method_name": "domain_show",
+            "description": "Gets the user-specified value associated with this domain.",
+            "return_type": "json_variant",
+            "parameters": 
+            [
+                {
+                    "name": "domain_name",
+                    "type": "string",
+                    "description": ""
+                }
+            ],
+            "prerequisites": ["json_authenticated"]
         }
-
     ]
 }
