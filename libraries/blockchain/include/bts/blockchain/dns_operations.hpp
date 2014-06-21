@@ -1,7 +1,7 @@
 #pragma once
 
 namespace bts { namespace blockchain {
-    struct update_domain_data_operation
+    struct update_domain_operation
     {
         update_domain_data_operation():domain_name(""){};
 
@@ -14,16 +14,16 @@ namespace bts { namespace blockchain {
         void evaluate( transaction_evaluation_state& eval_state );
     };
 
-    struct update_auction_data_operation
+    struct update_auction_operation
     {
-        update_domain_auction_data_operation():domain_name(""),bid(0){};
+        update_domain_auction_operation():domain_name(""),bid(0){};
         enum auction_update_type
         {
             sell = 0,
             bid = 1
         }
 
-        static const operation_type_enum   type
+        static const operation_type_enum   type;
 
         string                             domain_name;
         address                            bidder;
@@ -35,5 +35,5 @@ namespace bts { namespace blockchain {
 
 }}; // bts::blockchain
 
-FC_REFLECT( bts::blockchain::update_domain_data_operation, (update_type)(owner)(domain_name)(value) );
-FC_REFLECT( bts::blockchain::update_auction_data_operation, (domain_name)(bidder)(bid) );
+FC_REFLECT( bts::blockchain::update_domain_operation, (update_type)(owner)(domain_name)(value) );
+FC_REFLECT( bts::blockchain::update_auction_operation, (domain_name)(bidder)(bid) );
