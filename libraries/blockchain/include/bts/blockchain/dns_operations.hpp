@@ -1,4 +1,6 @@
 #pragma once
+#include <bts/blockchain/types.hpp>
+#include <bts/blockchain/operations.hpp>
 
 namespace bts { namespace blockchain {
     struct update_domain_operation

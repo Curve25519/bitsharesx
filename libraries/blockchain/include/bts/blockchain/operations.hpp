@@ -48,6 +48,7 @@ namespace bts { namespace blockchain {
       add_collateral_op_type      = 16,
       remove_collateral_op_type   = 17,
 
+      /* dns operations */
       update_domain_op_type       = 18,
       update_auction_op_type      = 19
    };

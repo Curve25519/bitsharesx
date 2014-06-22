@@ -1,4 +1,5 @@
 #pragma once
+#include <bts/blockchain/types.hpp>
 
 namespace bts { namespace blockchain {
 
