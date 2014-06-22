@@ -7,6 +7,7 @@
 #include <bts/blockchain/asset_record.hpp>
 #include <bts/blockchain/balance_record.hpp>
 #include <bts/blockchain/market_records.hpp>
+#include <bts/blockchain/dns_records.hpp>
 #include <bts/blockchain/block_record.hpp>
 
 namespace bts { namespace blockchain {

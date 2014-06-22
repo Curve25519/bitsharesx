@@ -2526,8 +2526,8 @@ config load_config( const fc::path& datadir )
     }
 
     signed_transaction        client_impl::domain_update( const string& domain_name,
-                                                          const variant& value,
-                                                          const string& new_owner_name )
+                                                          const variant& value
+                                                        )
     {
     }
 
