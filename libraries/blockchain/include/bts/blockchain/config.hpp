@@ -33,7 +33,7 @@
  * we check the connection count.  This means no blocks get produced
  * until at least a minimum number of clients are on line.
  */
-#define BTS_MIN_DELEGATE_CONNECTION_COUNT               (-1)
+#define BTS_MIN_DELEGATE_CONNECTION_COUNT               (0)
 
 /**
  * Defines the number of seconds that should elapse between blocks
