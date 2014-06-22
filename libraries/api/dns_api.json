@@ -5,6 +5,7 @@
         {
             "method_name": "domain_bid",
             "description": "Place a bid on a domain.",
+<<<<<<< HEAD
             "return_type": "signed_transaction",
             "parameters": 
             [
@@ -30,6 +31,9 @@
             "method_name": "domain_sell",
             "description": "Start an auction for a domain you own at a particular price.",
             "return_type": "signed_transaction",
+=======
+            "return_type": "transaction_id_type",
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
             "parameters": 
             [
                 {
@@ -46,9 +50,15 @@
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
+<<<<<<< HEAD
             "method_name": "domain_update",
             "description": "Update a domain's value.",
             "return_type": "signed_transaction",
+=======
+            "method_name": "sell_domain",
+            "description": "Start an auction for a domain you own at a particular price.",
+            "return_type": "transaction_id_type",
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
             "parameters": 
             [
                 {
@@ -57,6 +67,7 @@
                     "description": ""
                 },
                 {
+<<<<<<< HEAD
                     "name": "value",
                     "type": "json_variant",
                     "description": ""
@@ -65,14 +76,25 @@
                     "name": "owner",
                     "type": "account_name",
                     "description": ""
+=======
+                    "name": "min_amount",
+                    "type": "share_type",
+                    "description": ""
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
                 }
             ],
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
+<<<<<<< HEAD
             "method_name": "domain_transfer",
             "description": "Update a domain's owner.",
             "return_type": "signed_transaction",
+=======
+            "method_name": "update_domain",
+            "description": "Update a domain's value.",
+            "return_type": "transaction_id_type",
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
             "parameters": 
             [
                 {
@@ -81,6 +103,14 @@
                     "description": ""
                 },
                 {
+<<<<<<< HEAD
+=======
+                    "name": "value",
+                    "type": "json_variant",
+                    "description": ""
+                },
+                {
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
                     "name": "owner",
                     "type": "account_name",
                     "description": ""
@@ -89,18 +119,36 @@
             "prerequisites": ["wallet_open", "wallet_unlocked"]
         },
         {
+<<<<<<< HEAD
             "method_name": "domain_show",
             "description": "Gets the user-specified value associated with this domain.",
             "return_type": "json_variant",
+=======
+            "method_name": "transfer_domain",
+            "description": "Update a domain's owner.",
+            "return_type": "transaction_id_type",
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
             "parameters": 
             [
                 {
                     "name": "domain_name",
                     "type": "string",
                     "description": ""
+<<<<<<< HEAD
                 }
             ],
             "prerequisites": ["json_authenticated"]
+=======
+                },
+                {
+                    "name": "owner",
+                    "type": "account_name",
+                    "description": ""
+                }
+            ],
+            "prerequisites": ["wallet_open", "wallet_unlocked"]
+>>>>>>> 71e7d1b6da26574036adc9cc9ca7e05c832343ab
         }
+
     ]
 }
