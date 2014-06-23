@@ -3140,4 +3140,15 @@ namespace bts { namespace wallet {
       return results;
    } FC_CAPTURE_AND_RETHROW( (quote)(base) ) }
 
+
+    
+    signed_transaction wallet::domain_bid( const string& domain_name,
+                                           const share_type& bid_amount,
+                                           const string& owner_type )
+    {
+        FC_ASSERT( is_open() ); 
+        FC_ASSERT( is_unlocked() ); 
+        // domain must be in an auction or expired
+    }
+
 } } // bts::wallet

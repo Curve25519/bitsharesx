@@ -228,6 +228,12 @@ namespace bts { namespace blockchain {
          virtual void                       store_short_record( const market_index_key& key, const order_record& ) override;
          virtual void                       store_collateral_record( const market_index_key& key, const collateral_record& ) override;
 
+
+         virtual void                       store_domain_record( const domain_record& rec );
+         virtual odomain_record             get_domain_record( const string& domain_name );
+         virtual void                       store_auction_record( const auction_record& rec );
+         virtual oauction_record            get_auction_record( const string& domain_name );
+
       private:
          unique_ptr<detail::chain_database_impl> my;
    };

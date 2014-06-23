@@ -1,0 +1,7 @@
+#pragma once
+
+#define SECS_IN_DAY (60*60*24)
+
+#define BTS_DNS_AUCTION_DURATION_SEC (3 * SECS_IN_DAY)
+
+#define BTS_DNS_EXPIRE_DURATION_SEC (365 * SECS_IN_DAY)

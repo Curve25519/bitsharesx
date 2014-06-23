@@ -236,6 +236,12 @@ namespace bts { namespace blockchain {
           _short_db.open( data_dir / "short_db" );
           _collateral_db.open( data_dir / "collateral_db" );
 
+
+          // DNS
+          _auction_db.open( data_dir / "auction_db" );
+          _domain_db.open( data_dir / "domain_db" );
+
+
           _pending_trx_state = std::make_shared<pending_chain_state>( self->shared_from_this() );
 
       } FC_CAPTURE_AND_RETHROW( (data_dir) ) }
@@ -2016,6 +2022,33 @@ namespace bts { namespace blockchain {
    {
       return my->_pending_trx_state;
    }
+
+
+    void chain_database::store_domain_record( const domain_record& rec )
+    {
+        my->_domain_db.store( rec.domain_name, rec );     
+    }
+
+    odomain_record chain_database::get_domain_record( const string& domain_name )
+    {
+        auto itr = my->_domain_db.find( domain_name );
+        if (itr.valid())
+            return itr.value();
+        return odomain_record();
+    }
+
+    void chain_database::store_auction_record( const auction_record& rec )
+    {
+        my->_auction_db.store( rec.domain_name, rec );     
+    }
+
+    oauction_record chain_database::get_auction_record( const string& domain_name )
+    {
+        auto itr = my->_auction_db.find( domain_name );
+        if (itr.valid())
+            return itr.value();
+        return oauction_record();
+    }
 
 
 } } // namespace bts::blockchain

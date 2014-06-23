@@ -2534,13 +2534,17 @@ config load_config( const fc::path& datadir )
     }
 
     signed_transaction        client_impl::domain_update( const string& domain_name,
-                                                          const variant& value
-                                                        )
+                                                          const variant& value )
     {
     }
 
     variant                   client_impl::domain_show( const string& domain_name )
     {
+        auto orec = _chain_db->get_domain_record("domain_name");
+        if (!orec)
+            return orec; // null
+        else
+            return orec->value;
     }    
 
 

@@ -142,6 +142,11 @@ namespace bts { namespace wallet {
          unordered_map<address,wallet_market_order_status_record>         market_orders;
          map< string, wallet_setting_record >                             settings;
 
+         
+         map< string, domain_record >                                     domains;
+         map< string, auction_record >                                    auctions;
+
+
          unordered_map< address, address >                                btc_to_bts_address;
          unordered_map< address, int32_t >                                address_to_account_wallet_record_index;
          unordered_map< account_id_type, int32_t >                        account_id_to_wallet_record_index;
