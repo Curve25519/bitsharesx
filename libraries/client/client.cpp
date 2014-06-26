@@ -2749,7 +2749,7 @@ config load_config( const fc::path& datadir )
                                                        const share_type& bid_amount,
                                                        const string& owner_name )
     {
-
+        return _wallet->domain_bid( domain_name, bid_amount, owner_name, true ); 
     }
 
     signed_transaction        client_impl::domain_sell( const string& domain_name,

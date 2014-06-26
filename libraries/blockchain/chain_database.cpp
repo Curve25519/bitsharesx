@@ -7,6 +7,8 @@
 #include <bts/blockchain/time.hpp>
 #include <bts/blockchain/operation_factory.hpp>
 #include <bts/blockchain/fire_operation.hpp>
+#include <bts/blockchain/dns_operations.hpp>
+#include <bts/blockchain/dns_record.hpp>
 #include <bts/blockchain/genesis_json.hpp>
 #include <bts/blockchain/transaction_evaluation_state.hpp>
 

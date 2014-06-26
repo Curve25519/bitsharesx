@@ -3242,4 +3242,27 @@ namespace bts { namespace wallet {
       return results;
    } FC_CAPTURE_AND_RETHROW( (quote)(base) ) }
 
+
+
+
+
+
+    // DNS
+
+   
+    signed_transaction wallet::domain_bid( const string& domain_name,
+                                           const share_type& bid_amount,
+                                           const string& owner_name,
+                                           bool  sign ) 
+    {
+        signed_transaction trx;
+        auction_op = update_auction_operation();
+        auction_op.domain_name = domain_name;
+    }
+
+
+    // END DNS
+
+
+
 } } // bts::wallet
