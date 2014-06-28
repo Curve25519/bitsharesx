@@ -2755,17 +2755,20 @@ config load_config( const fc::path& datadir )
     signed_transaction        client_impl::domain_sell( const string& domain_name,
                                                         const share_type& min_amount )
     {
+        return _wallet->domain_sell( domain_name, min_amount, true);
     }
 
     signed_transaction        client_impl::domain_transfer( const string& domain_name,
                                                             const string& account_name )
     {
+        return _wallet->domain_transfer( domain_name, account_name, true );
     }
 
     signed_transaction        client_impl::domain_update( const string& domain_name,
                                                           const variant& value,
                                                           const string& new_owner_name )
     {
+        return _wallet->domain_update( domain_name, value, new_owner_name, true );
     }
 
     variant                   client_impl::domain_show( const string& domain_name )

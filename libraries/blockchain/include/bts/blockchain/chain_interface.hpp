@@ -7,6 +7,7 @@
 #include <bts/blockchain/asset_record.hpp>
 #include <bts/blockchain/balance_record.hpp>
 #include <bts/blockchain/market_records.hpp>
+#include <bts/blockchain/dns_record.hpp>
 #include <bts/blockchain/block_record.hpp>
 #include <bts/blockchain/delegate_slate.hpp>
 
@@ -121,6 +122,18 @@ namespace bts { namespace blockchain {
          virtual void                       store_asset_record( const asset_record& r )             = 0;
          virtual void                       store_balance_record( const balance_record& r )         = 0;
          virtual void                       store_account_record( const account_record& r )         = 0;
+
+
+        // DNS
+
+        virtual void                        store_domain_record( const domain_record& rec)          = 0;
+        virtual odomain_record              get_domain_record( const string& domain_name )const     = 0;
+        virtual void                        store_auction_record( const auction_record& rec)        = 0;
+        virtual oauction_record             get_auction_record( const string& domain_name )const    = 0;
+
+        // END DNS
+
+
 
          virtual void                       apply_deterministic_updates(){}
 

@@ -11,6 +11,8 @@
 #include <bts/blockchain/fire_operation.hpp>
 #include <bts/blockchain/account_operations.hpp>
 #include <bts/blockchain/asset_operations.hpp>
+#include <bts/blockchain/dns_operations.hpp>
+#include <bts/blockchain/dns_utils.hpp>
 #include <fc/thread/thread.hpp>
 #include <fc/crypto/base58.hpp>
 #include <fc/filesystem.hpp>
@@ -3256,9 +3258,65 @@ namespace bts { namespace wallet {
                                            bool  sign ) 
     {
         signed_transaction trx;
-        auction_op = update_auction_operation();
+        unordered_set<address> required_signatures;
+
+        FC_ASSERT( is_valid_domain( domain_name ), "Invalid domain name." );
+
+        auto domain_op = update_domain_operation();
+        auto auction_op = update_auction_operation();
+        domain_op.domain_name = domain_name;
         auction_op.domain_name = domain_name;
+
+        auto oauction_rec = my->_blockchain->get_auction_record( domain_name );
+        auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
+
+        /* First, see if we are allowed to start a new auction.
+         */
+        if ( can_start_auction( oauction_rec, odomain_rec ) )
+        {
+            // reset domain value
+            domain_op.owner = address();
+            domain_op.value = variant("");
+            FC_ASSERT(!"new auction start unimplemented");
+        }
+        // Otherwise, it's either owned by someone else...
+        else if ( is_auction_over( *oauction_rec ) )
+        {
+            FC_ASSERT(!"Someone already owns that domain.");
+        }
+        else // Or it is in an auction and you can bid!
+        {
+            FC_ASSERT(!"bid on existing auction unimplemented");
+        }
+
+        if ( sign )
+            sign_transaction( trx, required_signatures );
     }
+
+
+    signed_transaction   wallet::domain_sell( const string& domain_name,
+                                              const share_type& min_amount,
+                                              bool sign )
+    {
+
+    }
+
+
+    signed_transaction   wallet::domain_transfer( const string& domain_name,
+                                                  const string& account_name,
+                                                  bool sign )
+    {
+
+    }
+
+    signed_transaction   wallet::domain_update( const string& domain_name,
+                                                const variant& value,
+                                                const string& new_owner_name,
+                                                bool sign )
+    {
+
+    }
+
 
 
     // END DNS

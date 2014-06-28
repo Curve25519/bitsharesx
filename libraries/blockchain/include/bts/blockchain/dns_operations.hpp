@@ -32,7 +32,7 @@ namespace bts { namespace blockchain {
         string                             domain_name;
         address                            bidder;
         asset                              bid;
-        asset                              required_bid;
+        asset                              next_required_bid;
 //        auction_update_type                update_type;
 
         void evaluate( transaction_evaluation_state& eval_state );
@@ -42,4 +42,4 @@ namespace bts { namespace blockchain {
 
 FC_REFLECT( bts::blockchain::update_domain_operation, (owner)(domain_name)(value) );
 //FC_REFLECT_ENUM( bts::blockchain::update_auction_operation::auction_update_type, (auction_bid)(auction_sell) );
-FC_REFLECT( bts::blockchain::update_auction_operation, (domain_name)(bidder)(bid) );
+FC_REFLECT( bts::blockchain::update_auction_operation, (domain_name)(bidder)(bid)(next_required_bid) );

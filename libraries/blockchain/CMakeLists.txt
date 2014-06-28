@@ -50,6 +50,7 @@ add_library( bts_blockchain
              chain_database.cpp
 #fire_operation.cpp
              account_record.cpp
+             dns_utils.cpp #TODO move that shit
              ${generated_genesis_file}
              ${genesis_json}
              ${HEADERS}

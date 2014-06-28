@@ -1375,6 +1375,45 @@ namespace bts { namespace blockchain {
       }
    } FC_CAPTURE_AND_RETHROW( (record_id)(record_to_store) ) }
 
+
+
+// DNS
+
+
+   odomain_record chain_database::get_domain_record( const string& domain_name )const
+   { try {
+       auto itr = my->_domain_db.find( domain_name );
+       if( itr.valid() )
+          return itr.value();
+       return odomain_record();
+   } FC_CAPTURE_AND_RETHROW( (domain_name) ) }
+
+   void chain_database::store_domain_record( const domain_record& rec )
+   { try {
+      my->_domain_db.store( rec.domain_name, rec );
+   } FC_CAPTURE_AND_RETHROW( (rec) ) }
+
+
+   oauction_record chain_database::get_auction_record( const string& domain_name )const
+   { try {
+       auto itr = my->_auction_db.find( domain_name );
+       if( itr.valid() )
+          return itr.value();
+       return oauction_record();
+   } FC_CAPTURE_AND_RETHROW( (domain_name) ) }
+
+   void chain_database::store_auction_record( const auction_record& rec )
+   { try {
+      my->_auction_db.store( rec.domain_name, rec );
+   } FC_CAPTURE_AND_RETHROW( (rec) ) }
+
+
+
+// END DNS
+
+
+
+
    void chain_database::scan_assets( function<void( const asset_record& )> callback )
    {
         auto asset_itr = my->_asset_db.begin();
