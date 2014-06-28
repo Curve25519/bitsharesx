@@ -455,6 +455,10 @@ config load_config( const fc::path& datadir )
                 _cli->start();
             }
 
+            optional<time_point_sec> get_next_producible_block_timestamp( 
+                                      const vector<wallet_account_record>& delegate_records )const;
+            optional<time_point_sec> get_next_producible_block_timestamp()const;
+
             void reschedule_delegate_loop();
             void start_delegate_loop();
             void cancel_delegate_loop();
@@ -587,6 +591,23 @@ config load_config( const fc::path& datadir )
 
       }
 
+       optional<time_point_sec> client_impl::get_next_producible_block_timestamp( const vector<wallet_account_record>& delegate_records )const
+       {
+          if( !_wallet->is_open() || _wallet->is_locked() ) return optional<time_point_sec>();
+
+          vector<account_id_type> delegate_ids;
+          delegate_ids.reserve( delegate_records.size() );
+          for( const auto& delegate_record : delegate_records )
+              delegate_ids.push_back( delegate_record.id );
+
+          return _chain_db->get_next_producible_block_timestamp( delegate_ids );
+       }
+
+       optional<time_point_sec> client_impl::get_next_producible_block_timestamp()const
+       {
+          return get_next_producible_block_timestamp( _wallet->get_my_delegates( enabled_delegate_status | active_delegate_status ) );
+       }
+
        void client_impl::reschedule_delegate_loop()
        {
           if( !_delegate_loop_complete.valid() || _delegate_loop_complete.ready() )
@@ -618,7 +639,7 @@ config load_config( const fc::path& datadir )
           if( !_wallet->is_open() || _wallet->is_locked() ) return;
           const auto& enabled_delegates = _wallet->get_my_delegates( enabled_delegate_status );
           if( enabled_delegates.empty() ) return;
-          auto next_block_time = _wallet->get_next_producible_block_timestamp( enabled_delegates );
+          auto next_block_time = get_next_producible_block_timestamp( enabled_delegates );
 
           ilog( "Starting delegate loop at time: ${t}", ("t",now) );
           if( next_block_time.valid() )
@@ -1128,6 +1149,11 @@ config load_config( const fc::path& datadir )
       network_to_connect_to->add_node_delegate(my.get());
       my->_p2p_node = network_to_connect_to;
 
+    }
+
+    optional<time_point_sec> client::get_next_producible_block_timestamp()const
+    {
+       return my->get_next_producible_block_timestamp();
     }
 
     void client::simulate_disconnect( bool state )
@@ -2310,14 +2336,12 @@ config load_config( const fc::path& datadir )
       fc::mutable_variant_object info;
 
       /* Blockchain */
-      auto head_block_num                                       = _chain_db->get_head_block_num();
-      info["blockchain_head_block_num"]                         = head_block_num;
+      info["blockchain_head_block_num"]                         = _chain_db->get_head_block_num();
       auto head_block_timestamp                                 = _chain_db->now();
       info["blockchain_head_block_age"]                         = fc::get_approximate_relative_time_string( head_block_timestamp, now, " old" );
       info["blockchain_head_block_timestamp"]                   = head_block_timestamp;
 
       info["blockchain_average_delegate_participation"]         = _chain_db->get_average_delegate_participation();
-      info["blockchain_blocks_left_in_round"]                   = BTS_BLOCKCHAIN_NUM_DELEGATES - (head_block_num % BTS_BLOCKCHAIN_NUM_DELEGATES);
       info["blockchain_confirmation_requirement"]               = _chain_db->get_required_confirmations();
 
       auto share_record                                         = _chain_db->get_asset_record( BTS_ADDRESS_PREFIX );
@@ -2346,39 +2370,27 @@ config load_config( const fc::path& datadir )
       /* Wallet */
       auto is_open                                              = _wallet->is_open();
       info["wallet_open"]                                       = is_open;
-
       info["wallet_unlocked"]                                   = variant();
       info["wallet_unlocked_until"]                             = variant();
       info["wallet_unlocked_until_timestamp"]                   = variant();
-
-      info["wallet_block_production_enabled"]                   = variant();
-      info["wallet_next_block_production_time"]                 = variant();
-      info["wallet_next_block_production_timestamp"]            = variant();
-
       if( is_open )
       {
         info["wallet_unlocked"]                                 = _wallet->is_unlocked();
-
         auto unlocked_until                                     = _wallet->unlocked_until();
         if( unlocked_until.valid() )
         {
           info["wallet_unlocked_until"]                         = fc::get_approximate_relative_time_string( *unlocked_until, now );
           info["wallet_unlocked_until_timestamp"]               = *unlocked_until;
-
-          const auto& enabled_delegates                         = _wallet->get_my_delegates( enabled_delegate_status );
-          auto block_production_enabled                         = !enabled_delegates.empty();
-          info["wallet_block_production_enabled"]               = block_production_enabled;
-
-          if( block_production_enabled )
-          {
-            auto next_block_time                                = _wallet->get_next_producible_block_timestamp( enabled_delegates );
-            if( next_block_time.valid() )
-            {
-              info["wallet_next_block_production_time"]         = fc::get_approximate_relative_time_string( *next_block_time, now );
-              info["wallet_next_block_production_timestamp"]    = *next_block_time;
-            }
-          }
         }
+      }
+
+      info["wallet_time_until_next_block_production"]           = variant();
+      info["wallet_next_block_production_timestamp"]            = variant();
+      auto next_block_time                                      = get_next_producible_block_timestamp();
+      if( next_block_time.valid() )
+      {
+        info["wallet_time_until_next_block_production"]         = fc::get_approximate_relative_time_string( *next_block_time, now );
+        info["wallet_next_block_production_timestamp"]          = *next_block_time;
       }
 
       info["wallet_version"]                                    = BTS_WALLET_VERSION;
@@ -2516,7 +2528,7 @@ config load_config( const fc::path& datadir )
         return summaries;
     }
 
-   map<string, map<string, int64_t>> client_impl::wallet_account_balance( const string& account_name )
+   unordered_map<string, map<string, int64_t> >  client_impl::wallet_account_balance( const string& account_name )
    {
       if( account_name == string() || account_name == "*")
          return _wallet->get_account_balances();
@@ -2528,11 +2540,12 @@ config load_config( const fc::path& datadir )
          if( !_wallet->is_receive_account( account_name ) )
             FC_CAPTURE_AND_THROW( unknown_receive_account, (account_name) );
 
-         auto all_balances = _wallet->get_account_balances();
-         map<string, map<string,int64_t>> balance;
-         balance[account_name] = all_balances[account_name];
-         balance[account_name][BTS_BLOCKCHAIN_SYMBOL] = all_balances[account_name][BTS_BLOCKCHAIN_SYMBOL];
-         return balance;
+         auto all = _wallet->get_account_balances();
+
+         unordered_map<string, map<string,int64_t> > tmp;
+         tmp[account_name] = all[account_name];
+         tmp[account_name][BTS_BLOCKCHAIN_SYMBOL] = all[account_name][BTS_BLOCKCHAIN_SYMBOL];
+         return tmp;
       }
    }
 

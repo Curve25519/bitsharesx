@@ -706,24 +706,15 @@ namespace bts { namespace cli {
               }
               else if (method_name == "wallet_account_balance" )
               {
-                  const auto& summary = result.as<map<string, map<string, share_type>>>();
-                  if( !summary.empty() )
+                 auto bc = _client->get_chain();
+                  auto summary = result.as<unordered_map<string, map<string, share_type>>>();
+                  for( auto accts : summary )
                   {
-                      auto bc = _client->get_chain();
-                      for( const auto& accts : summary )
+                      *_out << accts.first << ":\n";
+                      for( auto balance : accts.second )
                       {
-                          *_out << accts.first << ":\n";
-                          for( const auto& balance : accts.second )
-                          {
-                             *_out << "    "
-                                   << bc->to_pretty_asset( asset( balance.second, bc->get_asset_id( balance.first) ) )
-                                   << "\n";
-                          }
+                         *_out << "    " << bc->to_pretty_asset( asset( balance.second, bc->get_asset_id( balance.first) ) ) <<"\n";
                       }
-                  }
-                  else
-                  {
-                      *_out << "No funds available.\n";
                   }
               }
               else if (method_name == "wallet_transfer")
