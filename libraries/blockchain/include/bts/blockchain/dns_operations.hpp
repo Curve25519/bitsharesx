@@ -31,8 +31,8 @@ namespace bts { namespace blockchain {
 
         string                             domain_name;
         address                            bidder;
-        asset                              bid;
-        asset                              next_required_bid;
+        share_type                         bid;
+        share_type                         next_required_bid;
 //        auction_update_type                update_type;
 
         void evaluate( transaction_evaluation_state& eval_state );

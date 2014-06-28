@@ -8,8 +8,8 @@ namespace bts { namespace blockchain {
     {
         string                 domain_name;
         address                current_bidder;
-        asset                  current_bid;
-        asset                  required_bid;
+        share_type             current_bid;
+        share_type             required_bid;
         uint32_t               last_bid_time; 
     };
 

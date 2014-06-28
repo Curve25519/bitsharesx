@@ -13,6 +13,7 @@
 #include <bts/blockchain/asset_operations.hpp>
 #include <bts/blockchain/dns_operations.hpp>
 #include <bts/blockchain/dns_utils.hpp>
+#include <bts/blockchain/dns_config.hpp>
 #include <fc/thread/thread.hpp>
 #include <fc/crypto/base58.hpp>
 #include <fc/filesystem.hpp>
@@ -3270,14 +3271,22 @@ namespace bts { namespace wallet {
         auto oauction_rec = my->_blockchain->get_auction_record( domain_name );
         auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
 
+        auto bidder_pubkey = get_account_public_key( owner_name );
+
         /* First, see if we are allowed to start a new auction.
          */
         if ( can_start_auction( oauction_rec, odomain_rec ) )
         {
+            FC_ASSERT(bid_amount >= P2P_MIN_INITIAL_BID, "Not large enough initial bid.");
             // reset domain value
             domain_op.owner = address();
             domain_op.value = variant("");
-            FC_ASSERT(!"new auction start unimplemented");
+            auction_op.bidder = get_new_address( owner_name );
+            auction_op.bid = bid_amount;
+            auction_op.next_required_bid = P2P_NEXT_REQ_BID( 0, bid_amount );
+            trx.operations.push_back(domain_op);
+            trx.operations.push_back(auction_op);
+            my->withdraw_to_transaction( bid_amount, 0, bidder_pubkey, trx, required_signatures );
         }
         // Otherwise, it's either owned by someone else...
         else if ( is_auction_over( *oauction_rec ) )
@@ -3291,6 +3300,8 @@ namespace bts { namespace wallet {
 
         if ( sign )
             sign_transaction( trx, required_signatures );
+
+        return trx;
     }
 
 

@@ -1,6 +1,6 @@
 #include <bts/blockchain/types.hpp>
-#include <bts/dns/config.hpp>
-#include <bts/dns/dns_utils.hpp>
+#include <bts/blockchain/dns_config.hpp>
+#include <bts/blockchain/dns_utils.hpp>
 #include <fc/time.hpp>
 
 namespace bts { namespace blockchain {
