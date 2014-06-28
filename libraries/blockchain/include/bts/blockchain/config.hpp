@@ -5,9 +5,9 @@
 /** @file bts/blockchain/config.hpp
  *  @brief Defines global constants that determine blockchain behavior
  */
-#define BTS_BLOCKCHAIN_VERSION                          (104)
-#define BTS_WALLET_VERSION                              (100)
-#define BTS_BLOCKCHAIN_DATABASE_VERSION                 (109)
+#define BTS_BLOCKCHAIN_VERSION                      (3103)
+#define BTS_WALLET_VERSION                          (3100)
+#define BTS_BLOCKCHAIN_DATABASE_VERSION             (3105)
 
 /**
  *  The address prepended to string representation of
@@ -17,9 +17,9 @@
  */
 #define BTS_ADDRESS_PREFIX                              "XTS"
 #define BTS_BLOCKCHAIN_SYMBOL                           "XTS"
-#define BTS_BLOCKCHAIN_NAME                             "BitShares XTS"
-#define BTS_BLOCKCHAIN_DESCRIPTION                      "Stake in future BitShares X chains"
-#define BTS_BLOCKCHAIN_PRECISION                        (100000)
+#define BTS_BLOCKCHAIN_NAME                             "dotp2p"
+#define BTS_BLOCKCHAIN_DESCRIPTION                      "The .p2p decentralized top-level domain."
+#define BTS_BLOCKCHAIN_PRECISION                        (1000000)
 
 /**
  * The number of delegates that the blockchain is designed to support
@@ -32,7 +32,7 @@
  * we check the connection count.  This means no blocks get produced
  * until at least a minimum number of clients are on line.
  */
-#define BTS_MIN_DELEGATE_CONNECTION_COUNT               (5)
+#define BTS_MIN_DELEGATE_CONNECTION_COUNT               (0)
 
 /**
  * Defines the number of seconds that should elapse between blocks

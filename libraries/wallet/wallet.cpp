@@ -3244,8 +3244,6 @@ namespace bts { namespace wallet {
 
 
 
-
-
     // DNS
 
    

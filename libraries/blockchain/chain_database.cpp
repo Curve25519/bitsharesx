@@ -252,6 +252,12 @@ namespace bts { namespace blockchain {
           _short_db.open( data_dir / "index/short_db" );
           _collateral_db.open( data_dir / "index/collateral_db" );
 
+
+          // DNS
+          _auction_db.open( data_dir / "auction_db" );
+          _domain_db.open( data_dir / "domain_db" );
+
+
           _pending_trx_state = std::make_shared<pending_chain_state>( self->shared_from_this() );
       } FC_CAPTURE_AND_RETHROW( (data_dir) ) }
 
