@@ -320,7 +320,7 @@
           [
             { 
               "name" : "timeout", 
-              "type" : "time_interval_in_seconds", 
+              "type" : "uint32_t",
               "description" : "the number of seconds to keep the wallet unlocked"
             },
             { 
@@ -776,6 +776,7 @@
                   "description" : "the memo to send to the receiver"
                }
             ],
+         "detailed_description" : "The asset being issued must have been created via wallet_asset_create in a previous block.",
          "prerequisites" : ["wallet_unlocked"]
       },
       {
@@ -923,12 +924,13 @@
       {
          "method_name"  : "wallet_set_priority_fee",
          "description"  : "Used to set the priority fee for new transactions. Return current fee if no parameter is provided.",
-         "return_type"  : "void",
+         "return_type"  : "real_amount",
          "parameters"   : [
          {
             "name" : "fee",
-            "type" : "amount",
-            "description" : "the priority fee to be set."
+            "type" : "real_amount",
+            "description" : "the wallet priority fee to be set",
+            "default_value" : "0"
          }
          ],
          "prerequisites" : ["wallet_open"],

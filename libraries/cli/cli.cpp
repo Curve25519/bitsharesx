@@ -53,7 +53,7 @@ namespace bts { namespace cli {
       class cli_impl
       {
          public:
-            client_ptr                                      _client;
+            bts::client::client*                            _client;
             rpc_server_ptr                                  _rpc_server;
             bts::cli::cli*                                  _self;
             fc::thread                                      _cin_thread;
@@ -72,7 +72,7 @@ namespace bts { namespace cli {
             bool _filter_output_for_tests;
 
 
-            cli_impl(const client_ptr& client, std::istream* command_script, std::ostream* output_stream);
+            cli_impl(bts::client::client* client, std::istream* command_script, std::ostream* output_stream);
 
             void process_commands(std::istream* input_stream);
 
@@ -744,26 +744,31 @@ namespace bts { namespace cli {
               {
                   auto blocks = result.as<vector<bts::blockchain::block_record>>();
 
-                  *_out << std::setw(10) << "HEIGHT";
-                  *_out << std::setw(30) << "TIME";
-                  *_out << std::setw(15) << "TXN COUNT";
-                  *_out << std::setw(65) << "SIGNING DELEGATE";
+                  *_out << std::left;
+                  *_out << std::setw(8) << "HEIGHT";
+                  *_out << std::setw(20) << "TIMESTAMP";
+                  *_out << std::setw(32) << "SIGNING DELEGATE";
+                  *_out << std::setw(8) << "# TXS";
                   *_out << std::setw(8)  << "SIZE";
+                  *_out << std::setw(16) << "TOTAL FEES";
                   *_out << std::setw(8)  << "LATENCY";
+                  *_out << std::setw(15)  << "PROCESSING TIME";
 
                   *_out << '\n';
-                  for (int i = 0; i < 136; ++i)
+                  for (int i = 0; i < 115; ++i)
                       *_out << '-';
                   *_out << '\n';
 
                   for (const auto& block : blocks)
                   {
-                      *_out << std::setw(10) << block.block_num
-                            << std::setw(30) << time_to_string(block.timestamp)
-                            << std::setw(15) << block.user_transaction_ids.size()
-                            << std::setw(65) << _client->blockchain_get_signing_delegate(block.block_num)
+                      *_out << std::setw(8) << block.block_num
+                            << std::setw(20) << time_to_string(block.timestamp)
+                            << std::setw(32) << _client->blockchain_get_signing_delegate(block.block_num)
+                            << std::setw(8) << block.user_transaction_ids.size()
                             << std::setw(8) << block.block_size
+                            << std::setw(16) << block.total_fees / double( BTS_BLOCKCHAIN_PRECISION )
                             << std::setw(8) << block.latency
+                            << std::setw(15) << block.processing_time.count() / double( 1000000 )
                             << '\n';
                   }
               }
@@ -839,7 +844,7 @@ namespace bts { namespace cli {
                       std::stringstream ss;
                       auto opt_rec = _client->get_chain()->get_asset_record(asset_id_type(0));
                       FC_ASSERT(opt_rec.valid(), "No asset with id 0??");
-                      float percent = 100.0 * delegate_rec.net_votes() / opt_rec->current_share_supply;
+                      float percent = 100.f * delegate_rec.net_votes() / opt_rec->current_share_supply;
                       ss << std::setprecision(10);
                       ss << std::fixed;
                       ss << percent;
@@ -952,6 +957,79 @@ namespace bts { namespace cli {
 
                   if(!record.public_data.is_null())
                       *_out << "Public data:\n" << fc::json::to_pretty_string(record.public_data) << "\n";
+              }
+              else if (method_name == "blockchain_list_forks")
+              {
+                  std::map<uint32_t, std::vector<fork_record>> forks = result.as<std::map<uint32_t, std::vector<fork_record>>>();
+                  std::map<block_id_type, std::string> invalid_reasons; //Your reasons are invalid.
+
+                  if (forks.empty())
+                      *_out << "No forks.\n";
+                  else
+                  {
+                      *_out << std::setw(15) << "FORKED BLOCK"
+                            << std::setw(30) << "FORKING BLOCK ID"
+                            << std::setw(30) << "SIGNING DELEGATE"
+                            << std::setw(15) << "TXN COUNT"
+                            << std::setw(10) << "SIZE"
+                            << std::setw(20) << "TIMESTAMP"
+                            << std::setw(10) << "LATENCY"
+                            << std::setw(8)  << "VALID"
+                            << std::setw(20)  << "IN CURRENT CHAIN"
+                            << "\n" << std::string(158, '-') << "\n";
+
+                      for (auto fork : forks)
+                      {
+                          *_out << std::setw(15) << fork.first << "\n";
+
+                          for (auto tine : fork.second)
+                          {
+                              *_out << std::setw(45) << fc::variant(tine.block_id).as_string();
+
+                              auto delegate_record = _client->get_chain()->get_account_record(tine.signing_delegate);
+                              if (delegate_record.valid() && delegate_record->name.size() < 29)
+                                  *_out << std::setw(30) << delegate_record->name;
+                              else
+                                  *_out << std::setw(30) << std::string("Delegate ID ") + fc::variant(tine.signing_delegate).as_string();
+
+                              *_out << std::setw(15) << tine.transaction_count
+                                    << std::setw(10) << tine.size
+                                    << std::setw(20) << time_to_string(tine.timestamp)
+                                    << std::setw(10) << tine.latency
+                                    << std::setw(8);
+
+                              if (tine.is_valid.valid()) {
+                                  if (*tine.is_valid) {
+                                      *_out << "YES";
+                                  }
+                                  else {
+                                      *_out << "NO";
+                                      if (tine.invalid_reason.valid())
+                                          invalid_reasons[tine.block_id] = tine.invalid_reason->to_detail_string();
+                                      else
+                                          invalid_reasons[tine.block_id] = "No reason given.";
+                                  }
+                              }
+                              else
+                                  *_out << "N/A";
+
+                              *_out << std::setw(20);
+                              if (tine.is_current_fork)
+                                  *_out << "YES";
+                              else
+                                      *_out << "NO";
+
+                              *_out << "\n";
+                          }
+                      }
+
+                      if (invalid_reasons.size() > 0) {
+                          *_out << "REASONS FOR INVALID BLOCKS\n";
+
+                          for (auto excuse : invalid_reasons)
+                              *_out << excuse.first << ": " << excuse.second << "\n";
+                      }
+                  }
               }
               else if (method_name == "blockchain_get_pending_transactions")
               {
@@ -1509,7 +1587,7 @@ namespace bts { namespace cli {
     extern "C" int get_character(FILE* stream);
 #endif
 
-    cli_impl::cli_impl(const client_ptr& client, std::istream* command_script, std::ostream* output_stream)
+    cli_impl::cli_impl(bts::client::client* client, std::istream* command_script, std::ostream* output_stream)
     :_client(client)
     ,_rpc_server(client->get_rpc_server())
     ,_quit(false)
@@ -1702,7 +1780,7 @@ namespace bts { namespace cli {
 
   } // end namespace detail
 
-   cli::cli( const client_ptr& client, std::istream* command_script, std::ostream* output_stream)
+   cli::cli( bts::client::client* client, std::istream* command_script, std::ostream* output_stream)
   :my( new detail::cli_impl(client,command_script,output_stream) )
   {
     my->_self = this;
