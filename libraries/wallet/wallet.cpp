@@ -3252,6 +3252,9 @@ namespace bts { namespace wallet {
                                            const string& owner_name,
                                            bool  sign ) 
     {
+        if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
+        if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
+
         signed_transaction trx;
         unordered_set<address> required_signatures;
 
@@ -3261,16 +3264,13 @@ namespace bts { namespace wallet {
         domain_op.domain_name = domain_name;
 
         auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
-        auto now = my->_blockchain->now().sec_since_epoch();
 
         auto bidder_pubkey = get_account_public_key( owner_name );
 
         /* First, see if we are allowed to start a new auction.
          */
-        if ( NOT odomain_rec.valid() || now > odomain_rec->last_update + P2P_EXPIRE_DURATION_SECS ) //TODO
+        if ( (NOT domain_in_auction(odomain_rec)) && (NOT domain_owned_by_owner(odomain_rec)) )
         {
-            if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
-            if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
             FC_ASSERT(bid_amount >= P2P_MIN_INITIAL_BID, "Not large enough initial bid.");
             // reset domain value
             domain_op.update_type = domain_record::first_bid;
@@ -3282,12 +3282,21 @@ namespace bts { namespace wallet {
             my->withdraw_to_transaction( bid_amount + priority_fee, 0, bidder_pubkey, trx, required_signatures );
         }
         // Otherwise, it's either currently in an auction...
-        else if ( odomain_rec.valid() 
-                  && (domain_op.update_type == domain_record::bid
-                      || domain_op.update_type == domain_record::first_bid )
-                  && now < odomain_rec->last_update + P2P_AUCTION_DURATION_SECS )
+        else if ( domain_in_auction(odomain_rec) )
         {
-            FC_ASSERT(!"bid on existing auction unimplemented");
+            FC_ASSERT(bid_amount >= odomain_rec->next_required_bid, "Bid lower than required bid.");
+            domain_op.update_type = domain_record::bid;
+            domain_op.owner = get_new_address( owner_name );
+            domain_op.value = variant("");
+            domain_op.bid_amount = bid_amount;
+            trx.operations.push_back(domain_op);
+            auto bid_diff      = bid_amount - odomain_rec->last_bid;
+            auto to_last_owner = odomain_rec->last_bid + (P2P_KICKBACK_RATIO * bid_diff);
+            auto to_fees       = (P2P_DIVIDEND_RATIO * bid_diff);
+            auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
+            trx.deposit(odomain_rec->owner, asset(to_last_owner, 0), 0);
+            my->withdraw_to_transaction(to_fees + priority_fee, 0, bidder_pubkey, trx, required_signatures);
+            
         }
         else // Or someone already owns it!
         {
@@ -3305,6 +3314,27 @@ namespace bts { namespace wallet {
                                               const share_type& min_amount,
                                               bool sign )
     {
+        if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
+        if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
+
+        signed_transaction trx;
+        unordered_set<address> required_signatures;
+        auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
+        auto seller_pubkey = get_account_public_key( sell_from );
+
+        FC_ASSERT( domain_owned_by_owner( odomain_rec ), "That domain is not owned by you yet." )
+
+        auto domain_op = update_domain_operation();
+        domain_op.domain_name = domain_name;
+        domain_op.value = variant("");
+        domain_op.update_type = domain_record::sell;
+        domain_op.owner = get_new_address( sell_from );
+        domain_op.bid_amount = min_amount;
+
+        required_signatures.insert(odomain_rec->owner);
+
+        auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
+        my->withdraw_to_transaction(priority_fee, 0, seller_pubkey, trx, required_signatures);
 
     }
 

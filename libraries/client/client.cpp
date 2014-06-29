@@ -2822,9 +2822,10 @@ config load_config( const fc::path& datadir )
     }
 
     signed_transaction        client_impl::domain_sell( const string& domain_name,
-                                                        const share_type& min_amount )
+                                                        const share_type& min_amount
+                                                        const string& sell_from )
     {
-        return _wallet->domain_sell( domain_name, min_amount, true);
+        return _wallet->domain_sell( domain_name, min_amount, sell_from, true);
     }
 
     signed_transaction        client_impl::domain_transfer( const string& domain_name,

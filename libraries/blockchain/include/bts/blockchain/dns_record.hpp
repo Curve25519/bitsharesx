@@ -16,13 +16,13 @@ namespace bts { namespace blockchain {
             info = 3
         };    
 
-        string                 domain_name;
-        address                owner;
-        variant                value;
-        uint32_t               last_update;
+        string                                        domain_name;
+        address                                       owner;
+        variant                                       value;
+        uint32_t                                      last_update;
         fc::enum_type<uint8_t,domain_update_type>     update_type;
-        share_type             last_bid;
-        share_type             next_required_bid;
+        share_type                                    last_bid;
+        share_type                                    next_required_bid;
     };
 
     typedef fc::optional<domain_record> odomain_record;
