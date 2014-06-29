@@ -2815,7 +2815,10 @@ config load_config( const fc::path& datadir )
                                                        const share_type& bid_amount,
                                                        const string& owner_name )
     {
-        return _wallet->domain_bid( domain_name, bid_amount, owner_name, true ); 
+        auto trx = _wallet->domain_bid( domain_name, bid_amount, owner_name, true ); 
+        std::cerr << "\nBRAODCASTING NOWWWW\n";
+        network_broadcast_transaction( trx );
+        return trx;
     }
 
     signed_transaction        client_impl::domain_sell( const string& domain_name,
@@ -2839,6 +2842,7 @@ config load_config( const fc::path& datadir )
 
     variant                   client_impl::domain_show( const string& domain_name )
     {
+        return fc::variant( _chain_db->get_domain_record( domain_name ) );
     }    
 
 

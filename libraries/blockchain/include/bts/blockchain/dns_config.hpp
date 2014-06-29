@@ -4,9 +4,10 @@
 #define P2P_MIN_BID_INCREASE_RATIO (101.0 / 100.0)
 #define P2P_REQUIRED_BID_DIFF_RATIO (1)  // my_required = prev_bid + R*(prev_bid - prev_required)
 #define P2P_DIVIDEND_RATIO (0.5)  //
-#define P2P_KICKBACK_RATIO (1 - P2P_DIVIDEND_RATIO)
+#define P2P_KICKBACK_RATIO (1.0 - P2P_DIVIDEND_RATIO)
 
-#define P2P_NEXT_REQ_BID(req, bid) (bid + (P2P_REQUIRED_BID_DIFF_RATIO*(bid - req)))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define P2P_NEXT_REQ_BID(req, bid) MAX((bid + (P2P_REQUIRED_BID_DIFF_RATIO*(bid - req))), P2P_MIN_BID_INCREASE_RATIO * bid)
 
 #define P2P_MAX_CONCURRENT_AUCTIONS_FOR_BLOCK(block) (50)
 #define P2P_AUCTION_DURATION_SECS (60*60*24  * 3)

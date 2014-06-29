@@ -10,9 +10,10 @@ namespace bts { namespace blockchain {
 
         enum domain_update_type
         {
-            bid = 0,
-            sell = 1,
-            info = 2
+            first_bid = 0,
+            bid = 1,
+            sell = 2,
+            info = 3
         };    
 
         string                 domain_name;
@@ -29,5 +30,5 @@ namespace bts { namespace blockchain {
 
 #include <fc/reflect/reflect.hpp>
 
-FC_REFLECT_ENUM( bts::blockchain::domain_record::domain_update_type, (bid)(sell)(info) );
+FC_REFLECT_ENUM( bts::blockchain::domain_record::domain_update_type, (first_bid)(bid)(sell)(info) );
 FC_REFLECT( bts::blockchain::domain_record, (domain_name)(owner)(value)(last_update)(update_type)(last_bid)(next_required_bid) );

@@ -3269,26 +3269,29 @@ namespace bts { namespace wallet {
          */
         if ( NOT odomain_rec.valid() || now > odomain_rec->last_update + P2P_EXPIRE_DURATION_SECS ) //TODO
         {
+            if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
+            if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
             FC_ASSERT(bid_amount >= P2P_MIN_INITIAL_BID, "Not large enough initial bid.");
             // reset domain value
-            domain_op.last_update_type = domain_record::bid;
+            domain_op.update_type = domain_record::first_bid;
             domain_op.owner = get_new_address( owner_name );
             domain_op.value = variant("");
-            domain_op.bid = bid_amount;
-            domain_op.next_required_bid = P2P_NEXT_REQ_BID( 0, bid_amount );
+            domain_op.bid_amount = bid_amount;
             trx.operations.push_back(domain_op);
-            my->withdraw_to_transaction( bid_amount, 0, bidder_pubkey, trx, required_signatures );
+            auto priority_fee = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
+            my->withdraw_to_transaction( bid_amount + priority_fee, 0, bidder_pubkey, trx, required_signatures );
         }
-        // Otherwise, it's either owned by someone else...
-        /*
-        else if ( is_auction_over( *oauction_rec ) )
-        {
-            FC_ASSERT(!"Someone already owns that domain.");
-        }
-        */
-        else // Or it is in an auction and you can bid!
+        // Otherwise, it's either currently in an auction...
+        else if ( odomain_rec.valid() 
+                  && (domain_op.update_type == domain_record::bid
+                      || domain_op.update_type == domain_record::first_bid )
+                  && now < odomain_rec->last_update + P2P_AUCTION_DURATION_SECS )
         {
             FC_ASSERT(!"bid on existing auction unimplemented");
+        }
+        else // Or someone already owns it!
+        {
+            FC_ASSERT(!"Someone already owns that domain.");
         }
 
         if ( sign )

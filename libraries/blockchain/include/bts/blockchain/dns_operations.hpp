@@ -12,16 +12,15 @@ namespace bts { namespace blockchain {
 
         static const operation_type_enum type;
 
-        address                  owner;
-        string                   domain_name;
-        variant                  value;
-        fc::enum_type<uint8_t, domain_record::domain_update_type>       last_update_type;
-        share_type               bid;
-        share_type               next_required_bid;
+        address                                                         owner;
+        string                                                          domain_name;
+        variant                                                         value;
+        fc::enum_type<uint8_t, domain_record::domain_update_type>       update_type;
+        share_type                                                      bid_amount;
 
         void evaluate( transaction_evaluation_state& eval_state );
     };
 
 }}; // bts::blockchain
 
-FC_REFLECT( bts::blockchain::update_domain_operation, (owner)(domain_name)(value)(bid)(next_required_bid)(last_update_type) );
+FC_REFLECT( bts::blockchain::update_domain_operation, (owner)(domain_name)(value)(bid_amount)(update_type) );
