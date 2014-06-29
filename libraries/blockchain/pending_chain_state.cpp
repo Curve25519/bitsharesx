@@ -65,7 +65,6 @@ namespace bts { namespace blockchain {
       for( const auto& item : _block_stats )    prev_state->store_delegate_block_stats( item.first.first, item.first.second, item.second );
 
       for( const auto& item : domains )         prev_state->store_domain_record( item.second );
-      for( const auto& item : auctions )        prev_state->store_auction_record( item.second );
    }
 
    otransaction_record pending_chain_state::get_transaction( const transaction_id_type& trx_id, 
@@ -164,12 +163,6 @@ namespace bts { namespace blockchain {
          auto prev_value = prev_state->get_domain_record( item.first );
          if( prev_value.valid() ) undo_state->store_domain_record( *prev_value );
          else  undo_state->store_domain_record( domain_record() );
-      }
-      for( const auto& item : auctions )
-      {
-         auto prev_value = prev_state->get_auction_record( item.first );
-         if( prev_value.valid() ) undo_state->store_auction_record( *prev_value );
-         else  undo_state->store_auction_record( auction_record() );
       }
       for( const auto& item : _block_stats )
       {
@@ -320,22 +313,6 @@ namespace bts { namespace blockchain {
    }
 
    
-   oauction_record pending_chain_state::get_auction_record( const std::string& domain_name )const
-   {
-      chain_interface_ptr prev_state = _prev_state.lock();
-      auto itr = auctions.find( domain_name );
-      if( itr != auctions.end() ) 
-        itr->second;
-      else if( prev_state ) 
-        return prev_state->get_auction_record( domain_name );
-      return oauction_record();
-   }
-
-   void pending_chain_state::store_auction_record( const auction_record& r )
-   {
-      auctions[r.domain_name] = r;
-   }
-
 
     // END DNS
 

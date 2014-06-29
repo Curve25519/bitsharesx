@@ -242,9 +242,6 @@ namespace bts { namespace blockchain {
 //DNS
          virtual void                        store_domain_record( const domain_record& rec) override;
          virtual odomain_record              get_domain_record( const string& domain_name ) const override;
-         virtual void                        store_auction_record( const auction_record& rec ) override;
-         virtual oauction_record             get_auction_record( const string& domain_name ) const override;
-
                                            
 
                                                               

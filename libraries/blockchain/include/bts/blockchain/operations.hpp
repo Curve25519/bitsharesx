@@ -50,8 +50,7 @@ namespace bts { namespace blockchain {
 
       define_delegate_slate_op_type = 18,
       
-      update_domain_op_type       = 41,
-      update_auction_op_type      = 42
+      update_domain_op_type       = 41
    };
 
    /**
@@ -125,7 +124,6 @@ FC_REFLECT_ENUM( bts::blockchain::operation_type_enum,
                  (remove_collateral_op_type)
                  (define_delegate_slate_op_type)
                  (update_domain_op_type)
-                 (update_auction_op_type)
                )
 
 FC_REFLECT( bts::blockchain::operation, (type)(data) )

@@ -182,7 +182,6 @@ namespace bts { namespace blockchain {
 
             // DNS
 
-            bts::db::level_map< string, auction_record >                        _auction_db;
             bts::db::level_map< string, domain_record >                         _domain_db;
 
             // END DNS
@@ -254,8 +253,7 @@ namespace bts { namespace blockchain {
 
 
           // DNS
-          _auction_db.open( data_dir / "auction_db" );
-          _domain_db.open( data_dir / "domain_db" );
+          _domain_db.open( data_dir / "index/domain_db" );
 
 
           _pending_trx_state = std::make_shared<pending_chain_state>( self->shared_from_this() );
@@ -1026,6 +1024,8 @@ namespace bts { namespace blockchain {
       my->_short_db.close();
       my->_collateral_db.close();
 
+      my->_domain_db.close();
+
       //my->_processed_transaction_id_db.close();
    } FC_RETHROW_EXCEPTIONS( warn, "" ) }
 
@@ -1416,21 +1416,6 @@ namespace bts { namespace blockchain {
    { try {
       my->_domain_db.store( rec.domain_name, rec );
    } FC_CAPTURE_AND_RETHROW( (rec) ) }
-
-
-   oauction_record chain_database::get_auction_record( const string& domain_name )const
-   { try {
-       auto itr = my->_auction_db.find( domain_name );
-       if( itr.valid() )
-          return itr.value();
-       return oauction_record();
-   } FC_CAPTURE_AND_RETHROW( (domain_name) ) }
-
-   void chain_database::store_auction_record( const auction_record& rec )
-   { try {
-      my->_auction_db.store( rec.domain_name, rec );
-   } FC_CAPTURE_AND_RETHROW( (rec) ) }
-
 
 
 // END DNS

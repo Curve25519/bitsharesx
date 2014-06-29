@@ -56,8 +56,6 @@ namespace bts { namespace blockchain {
          // DNS
          virtual void                 store_domain_record( const domain_record& rec) override;
          virtual odomain_record       get_domain_record( const string& domain_name ) const override;
-         virtual void                 store_auction_record( const auction_record& rec ) override;
-         virtual oauction_record      get_auction_record( const string& domain_name ) const override;
 
 
 
@@ -114,7 +112,6 @@ namespace bts { namespace blockchain {
          map< market_index_key, collateral_record>                      collateral; 
 
          unordered_map< string, domain_record>                          domains;
-         unordered_map< string, auction_record>                         auctions;
 
          map<std::pair<account_id_type, uint32_t>, delegate_block_stats> _block_stats;
 

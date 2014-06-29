@@ -3258,35 +3258,34 @@ namespace bts { namespace wallet {
         FC_ASSERT( is_valid_domain( domain_name ), "Invalid domain name." );
 
         auto domain_op = update_domain_operation();
-        auto auction_op = update_auction_operation();
         domain_op.domain_name = domain_name;
-        auction_op.domain_name = domain_name;
 
-        auto oauction_rec = my->_blockchain->get_auction_record( domain_name );
         auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
+        auto now = my->_blockchain->now().sec_since_epoch();
 
         auto bidder_pubkey = get_account_public_key( owner_name );
 
         /* First, see if we are allowed to start a new auction.
          */
-        if ( can_start_auction( oauction_rec, odomain_rec ) )
+        if ( NOT odomain_rec.valid() || now > odomain_rec->last_update + P2P_EXPIRE_DURATION_SECS ) //TODO
         {
             FC_ASSERT(bid_amount >= P2P_MIN_INITIAL_BID, "Not large enough initial bid.");
             // reset domain value
-            domain_op.owner = address();
+            domain_op.last_update_type = domain_record::bid;
+            domain_op.owner = get_new_address( owner_name );
             domain_op.value = variant("");
-            auction_op.bidder = get_new_address( owner_name );
-            auction_op.bid = bid_amount;
-            auction_op.next_required_bid = P2P_NEXT_REQ_BID( 0, bid_amount );
+            domain_op.bid = bid_amount;
+            domain_op.next_required_bid = P2P_NEXT_REQ_BID( 0, bid_amount );
             trx.operations.push_back(domain_op);
-            trx.operations.push_back(auction_op);
             my->withdraw_to_transaction( bid_amount, 0, bidder_pubkey, trx, required_signatures );
         }
         // Otherwise, it's either owned by someone else...
+        /*
         else if ( is_auction_over( *oauction_rec ) )
         {
             FC_ASSERT(!"Someone already owns that domain.");
         }
+        */
         else // Or it is in an auction and you can bid!
         {
             FC_ASSERT(!"bid on existing auction unimplemented");

@@ -144,7 +144,6 @@ namespace bts { namespace wallet {
 
          
          map< string, domain_record >                                     domains;
-         map< string, auction_record >                                    auctions;
 
 
          unordered_map< address, address >                                btc_to_bts_address;

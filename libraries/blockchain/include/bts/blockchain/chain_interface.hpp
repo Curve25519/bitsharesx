@@ -128,8 +128,6 @@ namespace bts { namespace blockchain {
 
         virtual void                        store_domain_record( const domain_record& rec)          = 0;
         virtual odomain_record              get_domain_record( const string& domain_name )const     = 0;
-        virtual void                        store_auction_record( const auction_record& rec)        = 0;
-        virtual oauction_record             get_auction_record( const string& domain_name )const    = 0;
 
         // END DNS
 
