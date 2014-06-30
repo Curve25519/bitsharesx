@@ -2816,29 +2816,32 @@ config load_config( const fc::path& datadir )
                                                        const string& owner_name )
     {
         auto trx = _wallet->domain_bid( domain_name, bid_amount, owner_name, true ); 
-        std::cerr << "\nBRAODCASTING NOWWWW\n";
         network_broadcast_transaction( trx );
         return trx;
     }
 
     signed_transaction        client_impl::domain_sell( const string& domain_name,
-                                                        const share_type& min_amount
-                                                        const string& sell_from )
+                                                        const share_type& min_amount )
     {
-        return _wallet->domain_sell( domain_name, min_amount, sell_from, true);
+        auto trx = _wallet->domain_sell( domain_name, min_amount, true);
+        network_broadcast_transaction( trx );
+        return trx;
     }
 
     signed_transaction        client_impl::domain_transfer( const string& domain_name,
                                                             const string& account_name )
     {
-        return _wallet->domain_transfer( domain_name, account_name, true );
+        auto trx = _wallet->domain_transfer( domain_name, account_name, true );
+        network_broadcast_transaction( trx );
+        return trx;
     }
 
     signed_transaction        client_impl::domain_update( const string& domain_name,
-                                                          const variant& value,
-                                                          const string& new_owner_name )
+                                                          const variant& value )
     {
-        return _wallet->domain_update( domain_name, value, new_owner_name, true );
+        auto trx = _wallet->domain_update( domain_name, value, true );
+        network_broadcast_transaction( trx );
+        return trx;
     }
 
     variant                   client_impl::domain_show( const string& domain_name )

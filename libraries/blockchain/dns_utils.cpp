@@ -43,11 +43,20 @@ namespace bts { namespace blockchain {
     {
         auto now = fc::time_point::now().sec_since_epoch();
         if ( ! rec.valid() )
+        {
+            ilog("AAA invalid record");
             return false;
+        }
         if ( domain_in_auction(rec) )
+        {
+            ilog("AAA in auction");
             return false;
+        }
         if ( now > rec->last_update + P2P_EXPIRE_DURATION_SECS )
+        {
+            ilog("AAA expired");
             return false;
+        }
         return true;
     }
 }} // bts::blockchain

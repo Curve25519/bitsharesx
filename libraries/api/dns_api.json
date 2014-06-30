@@ -60,11 +60,6 @@
                     "name": "value",
                     "type": "json_variant",
                     "description": ""
-                },
-                {
-                    "name": "owner",
-                    "type": "account_name",
-                    "description": ""
                 }
             ],
             "prerequisites": ["wallet_open", "wallet_unlocked"]

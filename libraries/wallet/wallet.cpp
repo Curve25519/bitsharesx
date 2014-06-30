@@ -3295,7 +3295,8 @@ namespace bts { namespace wallet {
             auto to_fees       = (P2P_DIVIDEND_RATIO * bid_diff);
             auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
             trx.deposit(odomain_rec->owner, asset(to_last_owner, 0), 0);
-            my->withdraw_to_transaction(to_fees + priority_fee, 0, bidder_pubkey, trx, required_signatures);
+            my->withdraw_to_transaction(to_last_owner + to_fees + priority_fee,
+                                0, bidder_pubkey, trx, required_signatures);
             
         }
         else // Or someone already owns it!
@@ -3320,22 +3321,32 @@ namespace bts { namespace wallet {
         signed_transaction trx;
         unordered_set<address> required_signatures;
         auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
-        auto seller_pubkey = get_account_public_key( sell_from );
 
         FC_ASSERT( domain_owned_by_owner( odomain_rec ), "That domain is not owned by you yet." )
+
+        auto okey = my->_wallet_db.lookup_key( odomain_rec->owner );
+        FC_ASSERT( okey.valid(), "Owner key for that domain is not in this wallet." );
+        auto oacct = my->_wallet_db.lookup_account( okey->account_address );
+        FC_ASSERT(oacct.valid(), "Account that owns this name doesn't exist in wallet." );
+        auto seller_pubkey = get_account_public_key( oacct->name );
 
         auto domain_op = update_domain_operation();
         domain_op.domain_name = domain_name;
         domain_op.value = variant("");
         domain_op.update_type = domain_record::sell;
-        domain_op.owner = get_new_address( sell_from );
+        domain_op.owner = get_new_address( oacct->name );
         domain_op.bid_amount = min_amount;
-
+        trx.operations.push_back(domain_op);
         required_signatures.insert(odomain_rec->owner);
 
         auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
         my->withdraw_to_transaction(priority_fee, 0, seller_pubkey, trx, required_signatures);
 
+        if ( sign )
+            sign_transaction( trx, required_signatures );
+
+
+        return trx;
     }
 
 
@@ -3343,15 +3354,79 @@ namespace bts { namespace wallet {
                                                   const string& account_name,
                                                   bool sign )
     {
+        FC_ASSERT(!"unimplemented domain_transfer");
+        if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
+        if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
 
+        signed_transaction trx;
+        unordered_set<address> required_signatures;
+        auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
+
+        FC_ASSERT( domain_owned_by_owner( odomain_rec ), "That domain is not owned by you yet." )
+ 
+        auto okey = my->_wallet_db.lookup_key( odomain_rec->owner );
+        FC_ASSERT( okey.valid(), "Owner key for that domain is not in this wallet." );
+        auto oacct = my->_wallet_db.lookup_account( okey->account_address );
+        FC_ASSERT(oacct.valid(), "Account that owns this name doesn't exist in wallet." );
+        auto owner_pubkey = get_account_public_key( oacct->name );
+
+        auto domain_op = update_domain_operation();
+        domain_op.domain_name = domain_name;
+        domain_op.value = odomain_rec->value;
+        domain_op.update_type = domain_record::info;
+        domain_op.owner = get_new_address( oacct->name );
+        domain_op.bid_amount = 0;
+
+        trx.operations.push_back(domain_op);
+        required_signatures.insert(odomain_rec->owner);
+
+        auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
+        my->withdraw_to_transaction(priority_fee, 0, owner_pubkey, trx, required_signatures);
+
+        if ( sign )
+            sign_transaction( trx, required_signatures );
+
+
+        return trx;
     }
 
     signed_transaction   wallet::domain_update( const string& domain_name,
                                                 const variant& value,
-                                                const string& new_owner_name,
                                                 bool sign )
     {
+        if( NOT is_open() ) FC_CAPTURE_AND_THROW( wallet_closed );
+        if( NOT is_unlocked() ) FC_CAPTURE_AND_THROW( login_required );
 
+        signed_transaction trx;
+        unordered_set<address> required_signatures;
+        auto odomain_rec = my->_blockchain->get_domain_record( domain_name );
+
+        FC_ASSERT( domain_owned_by_owner( odomain_rec ), "That domain is not owned by you yet." )
+
+        auto okey = my->_wallet_db.lookup_key( odomain_rec->owner );
+        FC_ASSERT( okey.valid(), "Owner key for that domain is not in this wallet." );
+        auto oacct = my->_wallet_db.lookup_account( okey->account_address );
+        FC_ASSERT(oacct.valid(), "Account that owns this name doesn't exist in wallet." );
+        auto owner_pubkey = get_account_public_key( oacct->name );
+
+        auto domain_op = update_domain_operation();
+        domain_op.domain_name = domain_name;
+        domain_op.value = value;
+        domain_op.update_type = domain_record::info;
+        domain_op.owner = odomain_rec->owner;
+        domain_op.bid_amount = 0;
+        trx.operations.push_back(domain_op);
+
+        required_signatures.insert(odomain_rec->owner);
+
+        auto priority_fee  = get_priority_fee( BTS_ADDRESS_PREFIX ).amount;
+        my->withdraw_to_transaction(priority_fee, 0, owner_pubkey, trx, required_signatures);
+
+        if ( sign )
+            sign_transaction( trx, required_signatures );
+
+
+        return trx;
     }
 
 

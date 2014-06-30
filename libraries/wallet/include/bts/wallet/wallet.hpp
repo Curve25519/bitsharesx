@@ -405,7 +405,6 @@ namespace bts { namespace wallet {
 
          signed_transaction        domain_update( const string& domain_name,
                                                   const variant& value,
-                                                  const string& new_owner_name,
                                                   bool sign );
 
       private:

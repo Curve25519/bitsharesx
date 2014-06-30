@@ -54,13 +54,16 @@ namespace bts { namespace blockchain {
                     if (deposit.condition.type == withdraw_condition_types::withdraw_signature_type)
                     {
                         auto condition = deposit.condition.as<withdraw_with_signature>();
-                        if (condition.owner == this->owner)
+                        if (condition.owner == odomain_rec->owner)
                         {
                             paid_to_previous_bidder += deposit.amount;
                         }
                     }
                 }
             }
+            ilog("expecting to get paid back ${amt}", ("amt", odomain_rec->last_bid + (bid_difference * P2P_KICKBACK_RATIO) ) );
+            ilog("actually got back: ${amt}", ("amt", paid_to_previous_bidder));
+
             FC_ASSERT(paid_to_previous_bidder == odomain_rec->last_bid + (bid_difference * P2P_KICKBACK_RATIO),
                      "Did not pay back enough to previous owner.");
             eval_state.required_fees += asset(bid_difference * P2P_DIVIDEND_RATIO);
