@@ -8,7 +8,6 @@
 #include <bts/client/messages.hpp>
 #include <boost/tuple/tuple.hpp>
 
-#include <queue>
 #include <deque>
 
 namespace bts { namespace net 
@@ -58,21 +57,6 @@ namespace bts { namespace net
       peer_connection_delegate*      _node;
       fc::optional<fc::ip::endpoint> _remote_endpoint;
       message_oriented_connection    _message_connection;
-
-      struct queued_message
-      {
-        message        message_to_send;
-        fc::time_point enqueue_time;
-        fc::time_point transmission_start_time;
-        fc::time_point transmission_finish_time;
-
-        queued_message(message message_to_send, fc::time_point enqueue_time = fc::time_point::now()) :
-          message_to_send(std::move(message_to_send)),
-          enqueue_time(enqueue_time)
-        {}
-      };
-      std::queue<queued_message> _queued_messages;
-      fc::future<void> _send_queued_messages_done;
     public:
       fc::time_point connection_initiation_time;
       fc::time_point connection_closed_time;
@@ -148,7 +132,7 @@ namespace bts { namespace net
         we_need_sync_items_from_peer(true),
         last_block_number_delegate_has_seen(0)
       {}
-      ~peer_connection();
+      ~peer_connection() {}
 
       fc::tcp_socket& get_socket();
       void accept_connection();
@@ -173,7 +157,6 @@ namespace bts { namespace net
       bool busy();
       bool idle();
     private:
-      void send_queued_messages_task();
       void accept_connection_task();
       void connect_to_task(const fc::ip::endpoint& remote_endpoint);
     };

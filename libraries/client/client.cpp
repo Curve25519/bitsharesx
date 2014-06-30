@@ -2641,7 +2641,7 @@ config load_config( const fc::path& datadir )
       network_broadcast_transaction( trx );
       return trx;
    }
-   account_vote_summary_type client_impl::wallet_account_vote_summary( const string& account_name )
+   bts::wallet::wallet::account_vote_summary_type client_impl::wallet_account_vote_summary( const string& account_name )
    {
       return _wallet->get_account_vote_summary( account_name );
    }
