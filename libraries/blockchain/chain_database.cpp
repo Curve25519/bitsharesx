@@ -183,6 +183,8 @@ namespace bts { namespace blockchain {
             // DNS
 
             bts::db::level_map< string, domain_record >                         _domain_db;
+            // just a cache of what is in auction
+            bts::db::level_map< string, string >                                _auction_db;
 
             // END DNS
 
@@ -1400,6 +1402,35 @@ namespace bts { namespace blockchain {
    { try {
       my->_domain_db.store( rec.domain_name, rec );
    } FC_CAPTURE_AND_RETHROW( (rec) ) }
+
+
+
+    vector<domain_record>       chain_database::get_domain_records( const string& first_name,
+                                                        uint32_t count )const
+    {
+       auto itr = my->_domain_db.lower_bound(first_name);
+       vector<domain_record> domains;
+       while( itr.valid() && domains.size() < count )
+       {
+          domains.push_back( itr.value() );
+          ++itr;
+       }
+       return domains;
+
+    }   
+    vector<domain_record>       chain_database::get_domains_in_auction()const
+    {
+        vector<domain_record> domains;
+        auto itr = my->_auction_db.begin();
+        while( itr.valid() )
+        {
+            auto domain_rec = get_domain_record( itr.value() );
+            FC_ASSERT( domain_rec.valid(), "all domain records in auction cache should be valid" );
+            domains.push_back( *domain_rec );
+            itr++;
+        }
+        return domains;
+    }
 
 
 // END DNS
